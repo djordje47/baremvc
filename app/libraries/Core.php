@@ -26,16 +26,30 @@ class Core
 
     public function __construct()
     {
-        $this->getUrl();
+        $url = $this->getUrl();
+        $controller_name = ucwords($url[0]);
+
+        if (file_exists('../app/controllers/' . $controller_name . '.php')) {
+            $this->currentController = $controller_name;
+            unset($url[0]);
+        }
+
+        require_once '../app/controllers/' . $this->currentController . '.php';
+
+        $this->currentController = new $this->currentController;
     }
 
     /**
      * Gets parameters from url
-     * http://baremvc.development/posts/edit/1 -> will echo /posts/edit/1
      * We are using url as index because in htaccess there is mapping all params to url index
      */
     public function getUrl()
     {
-        echo $_GET['url'];
+        if (isset($_GET['url'])) {
+            $url = rtrim($_GET['url'], '/');
+            $url = filter_var($url, FILTER_SANITIZE_URL);
+            $url = explode('/', $url);
+            return $url;
+        }
     }
 }
