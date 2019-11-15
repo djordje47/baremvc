@@ -4,16 +4,16 @@ class Pages extends Controller
 {
     public function __construct()
     {
-        echo 'Pages loaded <br>';
     }
 
     public function index()
     {
-        $this->view('hello', ['asd']);
+        $data = ['title' => 'Welcome'];
+        $this->view('pages/index', $data);
     }
 
-    public function about($id)
+    public function about()
     {
-        echo 'This is about ' . $id;
+        $this->view('pages/about', []);
     }
 }

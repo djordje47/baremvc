@@ -35,9 +35,10 @@ class Controller
     /**
      * Loads views
      * @param $view
-     * @param $data
+     * @param array $data
+     * @return false|string
      */
-    protected function view($view, $data)
+    public function view($view, $data = [])
     {
         if (file_exists('../app/views/' . $view . '.php')) {
             require_once '../app/views/' . $view . '.php';
