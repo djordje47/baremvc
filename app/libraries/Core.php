@@ -23,29 +23,47 @@ class Core
      * Parameters in url
      */
     protected $params = [];
+    /**
+     * @var array Url
+     */
+    protected $url = [];
 
-    // TODO Clean up constructor create separate private function one that will load controllers and one that will call methods @Djole
     public function __construct()
     {
-        $url = $this->getUrl();
-        $controller_name = ucwords($url[0]);
+        $this->url = $this->getUrl();
+        $this->loadController();
+        $this->invokeMethod();
+    }
+
+    /**
+     * Loads controller by the url
+     */
+    protected function loadController()
+    {
+        $controller_name = ucwords($this->url[0]);
 
         if (file_exists('../app/controllers/' . $controller_name . '.php')) {
             $this->currentController = $controller_name;
-            unset($url[0]);
+            unset($this->url[0]);
         }
 
         require_once '../app/controllers/' . $this->currentController . '.php';
 
         $this->currentController = new $this->currentController;
+    }
 
-        if (isset($url[1])) {
-            if (method_exists($this->currentController, $url[1])) {
-                $this->currentMethod = $url[1];
-                unset($url[1]);
+    /**
+     * Invokes a method by the params inside url in the previously loaded controller
+     */
+    protected function invokeMethod()
+    {
+        if (isset($this->url[1])) {
+            if (method_exists($this->currentController, $this->url[1])) {
+                $this->currentMethod = $this->url[1];
+                unset($this->url[1]);
             }
         }
-        $this->params = $url ? array_values($url) : [];
+        $this->params = $this->url ? array_values($this->url) : [];
 
         call_user_func_array([$this->currentController, $this->currentMethod], $this->params);
     }
